@@ -78,6 +78,12 @@ check_is_bash() {
 
 check_is_debian_based() {
   if [[ ! -f /etc/debian_version ]]; then
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+      echo -e "${YELLOW}#${RESET} macOS detected. The auto-install script is for Debian/Ubuntu.\\n"
+      echo -e "${YELLOW}#${RESET} Please follow the Mac install guide: docs/INSTALL_MAC.md\\n"
+      echo -e "${YELLOW}#${RESET} Quick start: install Docker Desktop + Ollama, then 'docker compose up -d'\\n"
+      exit 0
+    fi
     header_red
     echo -e "${RED}#${RESET} This script is designed to run on Debian-based systems only.\\n"
     echo -e "${RED}#${RESET} Please run this script on a Debian-based system and try again."
@@ -90,12 +96,9 @@ check_is_x86_64() {
   local arch
   arch="$(uname -m)"
   if [[ "${arch}" != "x86_64" && "${arch}" != "amd64" ]]; then
-    echo -e "${YELLOW}#${RESET} WARNING: Detected architecture '${arch}'. NOMAD officially supports x86_64 only.\\n"
-    echo -e "${YELLOW}#${RESET} ARM64/aarch64 support is tracked in PR #419 and is not yet ready.\\n"
-    echo -e "${YELLOW}#${RESET} Continuing on an unsupported architecture will likely fail and may leave\\n"
-    echo -e "${YELLOW}#${RESET} partial Docker images and files behind that you'll need to clean up manually.\\n"
-    echo -e "${YELLOW}#${RESET} Continuing in 10 seconds... press Ctrl+C now to abort.\\n"
-    sleep 10
+    echo -e "${YELLOW}#${RESET} NOTE: Detected architecture '${arch}'. ARM64 support is now available!\\n"
+    echo -e "${YELLOW}#${RESET} Multi-arch Docker images (amd64 + arm64) are published for all containers.\\n"
+    echo -e "${YELLOW}#${RESET} On macOS, see docs/INSTALL_MAC.md for Mac-specific instructions.\\n"
     return
   fi
   echo -e "${GREEN}#${RESET} Architecture check passed (${arch}).\\n"
